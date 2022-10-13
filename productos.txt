@@ -1,8 +1,0 @@
-[
-  {
-    "title": "producto1",
-    "price": 1500,
-    "url": "imagenproducto1.png",
-    "id": 1
-  }
-]
