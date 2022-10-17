@@ -11,23 +11,27 @@ class Contenedor{
             const id=jsonData.length+1
             objeto={...objeto, id:id}
             jsonData.push(objeto)
-            await fs.promises.writeFile(this.archivo, JSON.stringify(jsonData,null, 2))
-            return
+            await fs.promises.writeFile(this.archivo, JSON.stringify(jsonData, null, 2))
+            console.log(id)
+            
         }catch(error){
-throw new Error(error)        }
+            const id=1
+            objeto={...objeto, id:id}
+            await fs.promises.writeFile(this.archivo, JSON.stringify([objeto], null, 2))
+            console.log(id)
+        }
     }
     async getByID(id){
         try{
         const data=await fs.promises.readFile(this.archivo,"utf-8")
         const jsonData=JSON.parse(data)
-        // console.log(jsonData)
         const elementofiltrado=jsonData.find(item=>item.id==id)
         if(elementofiltrado==undefined){
             return null       
         }else{
-            return elementofiltrado
+            console.log(elementofiltrado)
         }}catch(error){
-            throw new Error(error)
+            console.log(error)
         }
     }
     
@@ -35,7 +39,7 @@ throw new Error(error)        }
         try{
         const data=await fs.promises.readFile(this.archivo,"utf-8")
         const jsonData=JSON.parse(data)
-        return jsonData  
+        console.log( jsonData)  
     }catch(error){
         throw new Error(error)
     }
@@ -72,6 +76,9 @@ throw new Error(error)        }
     
 
 const persona =new Contenedor("./productos.txt")
-persona.save({title:"producto1", price:1500, url:"imagenproducto1.png"})
 
-
+persona.save({title:"producto3", price:1500, url:"producto2.png"})
+persona.getByID(2)
+persona.deleteById(2)
+persona.getAll()
+persona.deleteAll()
