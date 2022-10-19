@@ -48,19 +48,13 @@ class Contenedor{
         try{
         const data=await fs.promises.readFile(this.archivo, "utf-8")
         const jsonData=JSON.parse(data)
-        const elementoFiltrado=jsonData.filter(item=>item.id==id)
-        if(elementoFiltrado==undefined){
-            console.error("no se encuentra el elemento")
-        }else{
-            const newArray=jsonData.filter(item=>item.id!=id)
-            for(let i=0;i<newArray.length;i++){
-                newArray[i]={...newArray[i],id:(i+1)}
-
-            }
+        const newArray=jsonData.filter(item=>item.id!=id)
+        for(let i=0;i<newArray.length;i++){
+            newArray[i]={...newArray[i],id:(i+1)}
+        }
             await fs.promises.writeFile(this.archivo,JSON.stringify(newArray, null, 2))
-
-        }}catch(error){
-            throw new Error(error)
+        }catch(error){
+            console.log("el elemendo que intentas eliminar no existe")
         }
     }
     async deleteAll(){
@@ -73,12 +67,5 @@ class Contenedor{
         }
 }}
 
-    
+module.exports=Contenedor
 
-const persona =new Contenedor("./productos.txt")
-
-persona.save({title:"producto3", price:1500, url:"producto2.png"})
-persona.getByID(2)
-persona.deleteById(2)
-persona.getAll()
-persona.deleteAll()
