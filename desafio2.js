@@ -29,7 +29,7 @@ class Contenedor{
         if(elementofiltrado==undefined){
             return null       
         }else{
-            console.log(elementofiltrado)
+            return elementofiltrado
         }}catch(error){
             console.log(error)
         }
@@ -39,7 +39,7 @@ class Contenedor{
         try{
         const data=await fs.promises.readFile(this.archivo,"utf-8")
         const jsonData=JSON.parse(data)
-        console.log( jsonData)  
+        return jsonData 
     }catch(error){
         throw new Error(error)
     }
