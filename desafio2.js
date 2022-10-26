@@ -48,11 +48,16 @@ class Contenedor{
         try{
         const data=await fs.promises.readFile(this.archivo, "utf-8")
         const jsonData=JSON.parse(data)
+
+        if(id<=jsonData.length){
         const newArray=jsonData.filter(item=>item.id!=id)
         for(let i=0;i<newArray.length;i++){
             newArray[i]={...newArray[i],id:(i+1)}
         }
             await fs.promises.writeFile(this.archivo,JSON.stringify(newArray, null, 2))
+    }else{
+        console.log("el elemendo que intentas eliminar no existe")
+    }
         }catch(error){
             console.log("el elemendo que intentas eliminar no existe")
         }
@@ -65,7 +70,41 @@ class Contenedor{
         }catch(error){
             throw new Error
         }
-}}
+}
+    async putByID(id,obj){
+        try {
+            const data=await fs.promises.readFile(this.archivo,"utf-8");
+            const jsonData=JSON.parse(data)
+            if(id<=jsonData.length){
+                const nuevoArray=jsonData.filter(i=>i.id!=id);
+                const object={...obj, id:id}
+                nuevoArray.push(object)
+                
+                await fs.promises.writeFile(this.archivo,JSON.stringify(nuevoArray,null,2))
+
+
+            }else{
+                return null
+            }
+        } catch (error) {
+            throw new Error
+
+        }
+    }
+
+    async getRandom(){
+        try {
+            const data=await fs.promises.readFile(this.archivo,"utf-8")
+            const jsonData=JSON.parse(data);
+            let productoRandom=parseInt(Math.random()*(jsonData.length-1))
+            return jsonData[productoRandom]
+        } catch (error) {
+            console.error(error)
+        }
+    }}
+
+
+
 
 module.exports=Contenedor
 

@@ -62,3 +62,4 @@ const pruebaDeleteAll=async()=>{
     await fileproductos.deleteAll()
 }
 module.exports=fileproductos
+

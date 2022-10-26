@@ -8,7 +8,7 @@
   {
     "title": "Remera LloteStudio",
     "price": 1500,
-    "thumbnail": "remerallotestudio.png",
+    "thumbnail": "remeraLloteStudio.png",
     "id": 2
   },
   {
@@ -19,8 +19,8 @@
   },
   {
     "title": "Remera LloteStudio Azul",
-    "price": 1500,
-    "thumbnail": "RemeraLloteAzul.png",
+    "price": 2220,
+    "thumbnail": "remeraLloteStudioAzul.png",
     "id": 4
   },
   {
@@ -40,5 +40,11 @@
     "price": 700,
     "thumbnail": "TazaRockanLlote.png",
     "id": 7
+  },
+  {
+    "title": "Taza RockanLlote",
+    "price": 700,
+    "thumbnail": "TazaRockanLlote.png",
+    "id": 8
   }
 ]
