@@ -46,18 +46,16 @@ class Contenedor{
     }
     async deleteById(id){
         try{
-        const data=await fs.promises.readFile(this.archivo, "utf-8")
-        const jsonData=JSON.parse(data)
-
-        if(id<=jsonData.length){
-        const newArray=jsonData.filter(item=>item.id!=id)
-        for(let i=0;i<newArray.length;i++){
-            newArray[i]={...newArray[i],id:(i+1)}
-        }
-            await fs.promises.writeFile(this.archivo,JSON.stringify(newArray, null, 2))
-    }else{
-        console.log("el elemendo que intentas eliminar no existe")
-    }
+            const data=await fs.promises.readFile(this.archivo,"utf-8");
+            const jsonData=JSON.parse(data)
+            const deleted = jsonData.find(i=>i.id==id)
+            const products = jsonData.filter(i=>i.id!=id)
+            for(let i=1;i<=products.length;i++){
+                products[i-1].id=i
+            }
+            await fs.promises.writeFile(this.archivo,JSON.stringify(products,null,2))
+            return deleted
+    
         }catch(error){
             console.log("el elemendo que intentas eliminar no existe")
         }
@@ -75,17 +73,13 @@ class Contenedor{
         try {
             const data=await fs.promises.readFile(this.archivo,"utf-8");
             const jsonData=JSON.parse(data)
-            if(id<=jsonData.length){
-                const nuevoArray=jsonData.filter(i=>i.id!=id);
-                const object={...obj, id:id}
-                nuevoArray.push(object)
-                
-                await fs.promises.writeFile(this.archivo,JSON.stringify(nuevoArray,null,2))
-
-
-            }else{
-                return null
-            }
+            const product = jsonData.find(i=>i.id==id)
+            const prodModify = {...product, ...obj}
+            const products = jsonData.filter(i=>i.id!=id)
+            products.push(prodModify)
+            await fs.promises.writeFile(this.archivo,JSON.stringify(products,null,2))
+            return jsonData
+            
         } catch (error) {
             throw new Error
 
