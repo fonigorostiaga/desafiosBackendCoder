@@ -11,23 +11,27 @@ class Contenedor{
             const id=jsonData.length+1
             objeto={...objeto, id:id}
             jsonData.push(objeto)
-            await fs.promises.writeFile(this.archivo, JSON.stringify(jsonData,null, 2))
-            return
+            await fs.promises.writeFile(this.archivo, JSON.stringify(jsonData, null, 2))
+            console.log(id)
+            
         }catch(error){
-throw new Error(error)        }
+            const id=1
+            objeto={...objeto, id:id}
+            await fs.promises.writeFile(this.archivo, JSON.stringify([objeto], null, 2))
+            console.log(id)
+        }
     }
     async getByID(id){
         try{
         const data=await fs.promises.readFile(this.archivo,"utf-8")
         const jsonData=JSON.parse(data)
-        // console.log(jsonData)
         const elementofiltrado=jsonData.find(item=>item.id==id)
         if(elementofiltrado==undefined){
             return null       
         }else{
             return elementofiltrado
         }}catch(error){
-            throw new Error(error)
+            console.log(error)
         }
     }
     
@@ -35,28 +39,25 @@ throw new Error(error)        }
         try{
         const data=await fs.promises.readFile(this.archivo,"utf-8")
         const jsonData=JSON.parse(data)
-        return jsonData  
+        return jsonData 
     }catch(error){
         throw new Error(error)
     }
     }
     async deleteById(id){
         try{
-        const data=await fs.promises.readFile(this.archivo, "utf-8")
-        const jsonData=JSON.parse(data)
-        const elementoFiltrado=jsonData.filter(item=>item.id==id)
-        if(elementoFiltrado==undefined){
-            console.error("no se encuentra el elemento")
-        }else{
-            const newArray=jsonData.filter(item=>item.id!=id)
-            for(let i=0;i<newArray.length;i++){
-                newArray[i]={...newArray[i],id:(i+1)}
-
+            const data=await fs.promises.readFile(this.archivo,"utf-8");
+            const jsonData=JSON.parse(data)
+            const deleted = jsonData.find(i=>i.id==id)
+            const products = jsonData.filter(i=>i.id!=id)
+            for(let i=1;i<=products.length;i++){
+                products[i-1].id=i
             }
-            await fs.promises.writeFile(this.archivo,JSON.stringify(newArray, null, 2))
-
-        }}catch(error){
-            throw new Error(error)
+            await fs.promises.writeFile(this.archivo,JSON.stringify(products,null,2))
+            return deleted
+    
+        }catch(error){
+            console.log("el elemendo que intentas eliminar no existe")
         }
     }
     async deleteAll(){
@@ -67,11 +68,37 @@ throw new Error(error)        }
         }catch(error){
             throw new Error
         }
-}}
+}
+    async putByID(id,obj){
+        try {
+            const data=await fs.promises.readFile(this.archivo,"utf-8");
+            const jsonData=JSON.parse(data)
+            const product = jsonData.find(i=>i.id==id)
+            const prodModify = {...product, ...obj}
+            const products = jsonData.filter(i=>i.id!=id)
+            products.push(prodModify)
+            await fs.promises.writeFile(this.archivo,JSON.stringify(products,null,2))
+            return jsonData
+            
+        } catch (error) {
+            throw new Error
 
-    
+        }
+    }
 
-const persona =new Contenedor("./productos.txt")
-persona.save({title:"producto1", price:1500, url:"imagenproducto1.png"})
+    async getRandom(){
+        try {
+            const data=await fs.promises.readFile(this.archivo,"utf-8")
+            const jsonData=JSON.parse(data);
+            let productoRandom=parseInt(Math.random()*(jsonData.length-1))
+            return jsonData[productoRandom]
+        } catch (error) {
+            console.error(error)
+        }
+    }}
 
+
+
+
+module.exports=Contenedor
 

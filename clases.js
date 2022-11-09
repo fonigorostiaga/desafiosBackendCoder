@@ -37,3 +37,4 @@ persona.addMascota("Riquelme")
 console.log(persona.countMascotas())
 persona.addBook("Juego de Tronos", "George Martin");
 console.log(persona.getBooksNames())
+
