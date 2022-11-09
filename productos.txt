@@ -46,5 +46,11 @@
     "price": 700,
     "thumbnail": "TazaRockanLlote.png",
     "id": 8
+  },
+  {
+    "title": "Taza Llote Aguero",
+    "thumbnail": "tazaLloteAguero.png",
+    "price": "5000",
+    "id": 9
   }
 ]
