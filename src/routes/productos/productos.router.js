@@ -1,6 +1,8 @@
 const express=require('express')
 const router=express.Router()
 const fileproductos=require('../../../pruebaMetodos')
+const _=require('loadsh')
+const productosDB=require('../../../database/products/claseDB')
 
 
 router.get('/',async(_req,res)=>{
@@ -86,4 +88,6 @@ router.delete('/:id', async(req,res)=>{
 
     }
 })
+
+
 module.exports=router

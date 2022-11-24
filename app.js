@@ -10,6 +10,10 @@ const {Server:IoServer}=require('socket.io')
 const {Server:HttpServer}=require('http')
 const http=new HttpServer(app)
 const io=new IoServer(http)
+const productosDB=require('./database/products/claseDB')
+const knexConfig=require('./database/config')
+const knex=require('knex')(knexConfig)
+const mensajes=require('./database/mensajes/claseMsjs')
 
 
 
@@ -29,41 +33,41 @@ app.get('/',(_req,res)=>{
 
     res.sendFile('index',{root:__dirname})
 })
-const messages=[]
 io.on('connection',async(socket)=>{
     console.info("nuevo cliente conectado")
     
-    socket.on('NEW_MESSAGE_TO_SERVER',data=>{
-        messages.push(data)
+    socket.on('NEW_MESSAGE_TO_SERVER',async (data)=>{
+        await mensajes.newMessage(data)
         io.sockets.emit('NEW_MESSAGE_FROM_SERVER',data)
     })
-    const productos=await fileproductos.getAll()
+    const productos=await productosDB.getAll()
+    const messages=await mensajes.getMsgs()
     socket.emit('UPDATE_DATA',{productos,messages})
     socket.on('NEW_PRODUCT_TO_SERVER',async (data)=>{
         console.log(data)
-        await fileproductos.save(data)
-        nuevosProductos=await fileproductos.getAll()
+        await productosDB.createProd(data)
+        nuevosProductos=await productosDB.getAll()
         io.sockets.emit('NEW_PRODUCTS_FROM_SERVER',nuevosProductos)
     })
 })
 
 
-// app.set('views', './views')
-// app.set('view engine', 'ejs')
-// app.post('/productos',(req,res)=>{
-//     const { title, thumbnail, price}=req.body
-//     fileproductos.save({title, thumbnail, price})
-//     res.redirect('/')
+app.set('views', './views')
+app.set('view engine', 'ejs')
+app.post('/productos',async (req,res)=>{
+    const { title, thumbnail, price}=req.body
+    await productosDB.createProd({title, thumbnail,price})
+    res.redirect('/')
 
-// })
+})
 
-// app.get('/productos',async(_req,res)=>{
-//     const productos=await fileproductos.getAll()
-//     res.render('pages/verProductos', {productos:productos})
-// })
-// app.get('/verProductos',(_req,res)=>{
-//     res.redirect('/')
-// })
+app.get('/productos',async(_req,res)=>{
+    const productos=await productosDB.getAll()
+    res.render('pages/verProductos', {productos:productos})
+})
+app.get('/verProductos',(_req,res)=>{
+    res.redirect('/')
+})
 
 
 

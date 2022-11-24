@@ -74,11 +74,12 @@ class Contenedor{
             const data=await fs.promises.readFile(this.archivo,"utf-8");
             const jsonData=JSON.parse(data)
             const product = jsonData.find(i=>i.id==id)
-            const prodModify = {...product, ...obj}
+            const nuevoID=parseInt(id)
+            const prodModify = {...product, ...obj,id:nuevoID}
             const products = jsonData.filter(i=>i.id!=id)
             products.push(prodModify)
             await fs.promises.writeFile(this.archivo,JSON.stringify(products,null,2))
-            return jsonData
+            return products
             
         } catch (error) {
             throw new Error
