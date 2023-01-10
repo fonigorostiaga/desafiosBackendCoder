@@ -1,6 +1,4 @@
-const fs=require('fs')
 const http=require('./app')
-const fileproductos=require('./pruebaMetodos')
 const PORT=process.env.PORT
 
 

@@ -3,6 +3,10 @@ require('dotenv').config()
 const indexRouter=require('./src/routes/index')
 const app=express()
 
+const cookieParser=require('cookie-parser')
+const session=require('express-session')
+const MongoStore=require('connect-mongo')
+
 const {Server:IoServer}=require('socket.io')
 const {Server:HttpServer}=require('http')
 const http=new HttpServer(app)
@@ -12,14 +16,36 @@ const {schema, normalize, denormalize}=require('normalizr')
 const util=require('util')
 
 
+
+
 const productosDB=require('./database/products/claseDB')
 const mongoConnect=require('./database/mongoDB/mongo.config')
 const serviceMongo=require('./src/services/mongoServices')
+const { setTimeout } = require('timers')
 mongoConnect()
 
+const secretito=process.env.COOKIE_SECRET
+const mongoConfig={
+    useNewUrlParser:true,
+    useUnifiedTopology:true
+}
+const storeConfig={
+    mongoUrl:'mongodb+srv://fonigorostiaga:Jazmin2020@rupertocluster.eo6y36x.mongodb.net/session?retryWrites=true&w=majority',
+    mongoOptions:mongoConfig,
+    ttl:120,
+    dbName:'ecommerce',
+    stringify:true
+}
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
+app.use(cookieParser())
+app.use(session({
+    store:MongoStore.create(storeConfig),
+    secret:secretito,
+    resave:true,
+    saveUninitialized:false
 
+}))
 app.use(express.static(__dirname+'/public'))
 app.use('/api',indexRouter)
 
@@ -29,9 +55,6 @@ app.get('/health',(_req,res)=>{
         success:true,
         environment:process.env.ENVIRONMENT
     })
-})
-app.get('/',(_req,res)=>{
-    res.sendFile('index',{root:__dirname})
 })
 
 io.on('connection',async(socket)=>{
@@ -63,24 +86,38 @@ io.on('connection',async(socket)=>{
 })
 
 
-app.set('views', './views')
+app.set('views','./views')
 app.set('view engine', 'ejs')
-app.post('/productos',async (req,res)=>{
-    const { title, thumbnail, price}=req.body
-    await productosDB.createProd({title, thumbnail,price})
-    res.redirect('/')
+
+
+
+
+app.get('/login',async(req,res)=>{
+    res.render('login')
 
 })
-
-app.get('/productos',async(_req,res)=>{
-    const productos=await productosDB.getAll()
-    res.render('pages/verProductos', {productos:productos})
+app.post('/login',async(req,res)=>{
+    const {name}=req.body
+    req.session.name=name
+    res.redirect('/inicio')
 })
-app.get('/',(_req,res)=>{
-    res.redirect('/')
+app.get('/inicio',async(req,res)=>{
+    if(req.session.name){
+       return res.render('inicio',{name:req.session.name})
+    }
+    res.render('login')
+    
 })
-
-
-
-
+app.get('/logout', async(req,res)=>{
+    res.render('logout',{name:req.session.name})
+    req.session.destroy(err=>{
+        if(err){
+            return res.status(400).json({
+                success:false,
+                message:err.message
+            })
+        }
+    });
+    
+})
 module.exports=http;
