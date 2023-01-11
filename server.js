@@ -1,11 +1,9 @@
-const fs=require('fs')
-const app=require('./app')
-const fileproductos=require('./pruebaMetodos')
-const PORT=process.env.PORT
+const http=require('./app')
+const PORT=process.env.PORT||3000
 
 
 
 
-app.listen(PORT,()=>{
+http.listen(PORT,()=>{
     console.info("server runing in port "+ PORT)
 })

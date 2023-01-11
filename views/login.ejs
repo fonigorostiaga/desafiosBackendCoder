@@ -1,0 +1,18 @@
+<%-include('templates/head')%>
+
+<div class="row">
+    <div class="col"></div>
+    <div class="col">   
+        <form action="/login" method="POST">
+            <label for="Name">Ingrese su nombre</label>
+            <input type="text" name="name" id="name">
+            <button type="submit" id="loginSubmit">Ingresar</button>
+        </form>
+    </div>
+    <div class="col"></div>
+
+</div>
+
+<%-include('templates/footer')%>
+</body>
+</html>

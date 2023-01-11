@@ -1,0 +1,67 @@
+<%-include('templates/head')%>
+<body>
+  <div class="header">  
+    <h1 class="saludoSession">Hola <%=name%></h1>
+    <form action="/logout" method="GET"><button class="btn btn-primary" type="submit">Logout</button></form>
+  </div>
+  <div class="row">
+    <div class="col"></div>
+    <div class="col col2">
+        <h3>Productos</h3>
+            <div class="mb-3">
+              <label for="exampleInputEmail1" class="form-label">Title</label>
+              <input type="text" name="title" class="form-control" id="title" aria-describedby="emailHelp">
+            </div>
+            <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">code</label>
+                <input type="text" name="title" class="form-control" id="code" aria-describedby="emailHelp">
+              </div>
+            <div class="mb-3">
+              <label for="exampleInputPassword1" class="form-label">thumbnail</label>
+              <input type="text" name="code" class="form-control" id="thumbnail">
+            </div>
+            <div class="mb-3">
+                <label for="exampleInputPassword1" class="form-label">price</label>
+                <input type="number" name="price"class="form-control" id="price">
+              </div>
+            <button type="button"onclick="sendNewProduct()" class="btn btn-primary">Guardar</button>
+               
+
+            <table class="table table-dark table-striped mt-3">
+                <thead>
+                  <tr>
+                    <th scope="col">Title</th>
+                    <th scope="col">Code</th>
+                    <th scope="col">Price</th>
+                    
+                  </tr>
+                </thead>
+                <tbody class="tableBody">
+             
+                </tbody>
+              </table>
+        </div>
+    <div class="col"></div>
+</div>
+<div class="chatBox container mt-4 mb-5">
+
+    <h1>Centro de mensajes</h1>
+    <input type="email" placeholder='Email' id='email'required/>
+    <input type="text" placeholder="nombre" id="name">
+    <input type="text" placeholder='apellido' id='lastname'required/>
+    <input type="number" placeholder="edad" id="age">
+    <input type="text" placeholder='alias' id='alias'required/>
+    <input type="text" placeholder="avatar" id="avatar">
+    <textarea class="text"  placeholder="mensaje" rows='5' cols="100" id='mensaje'required></textarea>
+    <button type="button" onclick="sendNewMessage()">Enviar</button>
+    <ul id="messagesList"></ul>
+    
+
+
+
+</div>
+  <%-include('templates/footer')%>
+
+
+</body>
+</html>
