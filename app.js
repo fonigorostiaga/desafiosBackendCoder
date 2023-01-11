@@ -18,10 +18,8 @@ const util=require('util')
 
 
 
-const productosDB=require('./database/products/claseDB')
 const mongoConnect=require('./database/mongoDB/mongo.config')
 const serviceMongo=require('./src/services/mongoServices')
-const { setTimeout } = require('timers')
 mongoConnect()
 
 const secretito=process.env.COOKIE_SECRET
@@ -32,7 +30,7 @@ const mongoConfig={
 const storeConfig={
     mongoUrl:'mongodb+srv://fonigorostiaga:Jazmin2020@rupertocluster.eo6y36x.mongodb.net/session?retryWrites=true&w=majority',
     mongoOptions:mongoConfig,
-    ttl:120,
+    ttl:60,
     dbName:'ecommerce',
     stringify:true
 }
@@ -105,7 +103,7 @@ app.get('/inicio',async(req,res)=>{
     if(req.session.name){
        return res.render('inicio',{name:req.session.name})
     }
-    res.render('login')
+    res.redirect('login')
     
 })
 app.get('/logout', async(req,res)=>{
