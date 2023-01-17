@@ -13,7 +13,6 @@ const mongoConnect=async ()=>{
     }else{
         MONGO_URI=`mongodb://localhost:27017/desafios`
     }
-    console.log(MONGO_URI)
     mongoose.Promise=global.Promise
     await mongoose.connect(MONGO_URI,{
         useNewUrlParser:true,
