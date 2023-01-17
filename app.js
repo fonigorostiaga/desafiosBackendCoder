@@ -3,6 +3,10 @@ require('dotenv').config()
 const indexRouter=require('./src/routes/index')
 const app=express()
 
+const  passport =require('passport')
+const md5 = require('md5')
+const LocalStrategy=require('passport-local').Strategy
+
 const cookieParser=require('cookie-parser')
 const session=require('express-session')
 const MongoStore=require('connect-mongo')
@@ -14,6 +18,7 @@ const io=new IoServer(http)
 
 const mongoConnect=require('./database/mongoDB/mongo.config')
 const serviceMongo=require('./src/services/mongoServices')
+const userModel = require('./database/mongoDB/models/userModel')
 mongoConnect()
 
 const secretito=process.env.COOKIE_SECRET
@@ -71,6 +76,39 @@ io.on('connection',async(socket)=>{
 
 app.set('views','./views')
 app.set('view engine', 'ejs')
+
+passport.use('login',new LocalStrategy({passReqToCallback:true},async(req,username, password, done)=>{
+    const userData=await userModel.findOne({username,password:md5(password)})
+    if(!userData){
+        req.session.errorMess='Las credenciales ingresadas no son validas'
+        return done(null, false)
+    }
+    done(null, userData)
+}))
+passport.use('signup', new LocalStrategy({passReqToCallback:true},async(req,username, password, done)=>{
+    const userData=await userModel.findOne({username})
+    if(userData){
+        req.session.errorMess='Las credenciales ingresadas no son validas'
+        return done(null, false)
+    }
+    const stageUser=new userModel({
+        username,
+        password:md5(password),
+        email:req.body.email
+    })
+    const newUser=await stageUser.save()
+    done(null, newUser)
+}))
+passport.serializeUser((user,done)=>{
+    done(null, user._id)
+})
+passport.deserializeUser(async(id,done)=>{
+    const userData=await userModel.findById(id)
+    done(null, userData)
+})
+
+app.use(passport.initialize())
+app.use(passport.session())
 
 app.use(indexRouter)
 
