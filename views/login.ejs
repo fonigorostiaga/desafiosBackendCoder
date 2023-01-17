@@ -4,10 +4,19 @@
     <div class="col"></div>
     <div class="col">   
         <form action="/login" method="POST">
-            <label for="Name">Ingrese su nombre</label>
-            <input type="text" name="name" id="name">
-            <button type="submit" id="loginSubmit">Ingresar</button>
+            <div class="mb-3">
+                <label for="exampleInputEmail1" class="form-label">Username</label>
+                <input type="text" class="form-control" id="exampleInputEmail1" name="username">
+            </div>
+            <div class="mb-3">
+                <label for="exampleInputPassword1" class="form-label">Password</label>
+                <input type="password" class="form-control" name="password">
+            </div>
+            <button type="submit"  class="btn btn-primary" id="loginSubmit">Ingresar</button>
+            <a href="/" class="btn btn-primary">Register</a>
+
         </form>
+
     </div>
     <div class="col"></div>
 

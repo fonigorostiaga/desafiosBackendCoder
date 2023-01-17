@@ -12,12 +12,6 @@ const {Server:HttpServer}=require('http')
 const http=new HttpServer(app)
 const io=new IoServer(http)
 
-const {schema, normalize, denormalize}=require('normalizr')
-const util=require('util')
-
-
-
-
 const mongoConnect=require('./database/mongoDB/mongo.config')
 const serviceMongo=require('./src/services/mongoServices')
 mongoConnect()
@@ -28,10 +22,10 @@ const mongoConfig={
     useUnifiedTopology:true
 }
 const storeConfig={
-    mongoUrl:'mongodb+srv://fonigorostiaga:Jazmin2020@rupertocluster.eo6y36x.mongodb.net/session?retryWrites=true&w=majority',
+    mongoUrl:'mongodb://localhost:27017/',
     mongoOptions:mongoConfig,
     ttl:60,
-    dbName:'ecommerce',
+    dbName:'desafios',
     stringify:true
 }
 app.use(express.json())
@@ -45,7 +39,6 @@ app.use(session({
 
 }))
 app.use(express.static(__dirname+'/public'))
-app.use('/api',indexRouter)
 
 app.get('/health',(_req,res)=>{
     res.status(200).json({
@@ -64,15 +57,7 @@ io.on('connection',async(socket)=>{
     })
 
     const mensajes=await serviceMongo.getMsgs()
-    const chatData={id:'mensajes',mensajes:mensajes}
-    const authorSchema=new schema.Entity('author')
-    const mensajeSchema=new schema.Entity('mensaje',{
-        author:authorSchema
-    })
-    const chatSchema=new schema.Entity('mensajes',{
-        mensajes:[mensajeSchema]
-    }) 
-    const normData=normalize(chatData,chatSchema)
+    
     const productos=await serviceMongo.getAllProds()
     socket.emit('UPDATE_DATA',{productos,mensajes})
 
@@ -87,35 +72,10 @@ io.on('connection',async(socket)=>{
 app.set('views','./views')
 app.set('view engine', 'ejs')
 
+app.use(indexRouter)
 
 
 
-app.get('/login',async(req,res)=>{
-    res.render('login')
 
-})
-app.post('/login',async(req,res)=>{
-    const {name}=req.body
-    req.session.name=name
-    res.redirect('/inicio')
-})
-app.get('/inicio',async(req,res)=>{
-    if(req.session.name){
-       return res.render('inicio',{name:req.session.name})
-    }
-    res.redirect('login')
-    
-})
-app.get('/logout', async(req,res)=>{
-    res.render('logout',{name:req.session.name})
-    req.session.destroy(err=>{
-        if(err){
-            return res.status(400).json({
-                success:false,
-                message:err.message
-            })
-        }
-    });
-    
-})
+
 module.exports=http;
