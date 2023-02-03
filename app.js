@@ -3,6 +3,10 @@ require('dotenv').config()
 const indexRouter=require('./src/routes/index')
 const app=express()
 
+const  passport =require('passport')
+const md5 = require('md5')
+const LocalStrategy=require('passport-local').Strategy
+
 const cookieParser=require('cookie-parser')
 const session=require('express-session')
 const MongoStore=require('connect-mongo')
@@ -12,14 +16,9 @@ const {Server:HttpServer}=require('http')
 const http=new HttpServer(app)
 const io=new IoServer(http)
 
-const {schema, normalize, denormalize}=require('normalizr')
-const util=require('util')
-
-
-
-
 const mongoConnect=require('./database/mongoDB/mongo.config')
 const serviceMongo=require('./src/services/mongoServices')
+const userModel = require('./database/mongoDB/models/userModel')
 mongoConnect()
 
 const secretito=process.env.COOKIE_SECRET
@@ -28,10 +27,10 @@ const mongoConfig={
     useUnifiedTopology:true
 }
 const storeConfig={
-    mongoUrl:'mongodb+srv://fonigorostiaga:Jazmin2020@rupertocluster.eo6y36x.mongodb.net/session?retryWrites=true&w=majority',
+    mongoUrl:'mongodb://localhost:27017/',
     mongoOptions:mongoConfig,
     ttl:60,
-    dbName:'ecommerce',
+    dbName:'desafios',
     stringify:true
 }
 app.use(express.json())
@@ -45,7 +44,6 @@ app.use(session({
 
 }))
 app.use(express.static(__dirname+'/public'))
-app.use('/api',indexRouter)
 
 app.get('/health',(_req,res)=>{
     res.status(200).json({
@@ -64,15 +62,7 @@ io.on('connection',async(socket)=>{
     })
 
     const mensajes=await serviceMongo.getMsgs()
-    const chatData={id:'mensajes',mensajes:mensajes}
-    const authorSchema=new schema.Entity('author')
-    const mensajeSchema=new schema.Entity('mensaje',{
-        author:authorSchema
-    })
-    const chatSchema=new schema.Entity('mensajes',{
-        mensajes:[mensajeSchema]
-    }) 
-    const normData=normalize(chatData,chatSchema)
+    
     const productos=await serviceMongo.getAllProds()
     socket.emit('UPDATE_DATA',{productos,mensajes})
 
@@ -87,35 +77,43 @@ io.on('connection',async(socket)=>{
 app.set('views','./views')
 app.set('view engine', 'ejs')
 
-
-
-
-app.get('/login',async(req,res)=>{
-    res.render('login')
-
-})
-app.post('/login',async(req,res)=>{
-    const {name}=req.body
-    req.session.name=name
-    res.redirect('/inicio')
-})
-app.get('/inicio',async(req,res)=>{
-    if(req.session.name){
-       return res.render('inicio',{name:req.session.name})
+passport.use('login',new LocalStrategy({passReqToCallback:true},async(req,username, password, done)=>{
+    const userData=await userModel.findOne({username,password:md5(password)})
+    if(!userData){
+        req.session.errorMess='Las credenciales ingresadas no son validas'
+        return done(null, false)
     }
-    res.redirect('login')
-    
+    done(null, userData)
+}))
+passport.use('signup', new LocalStrategy({passReqToCallback:true},async(req,username, password, done)=>{
+    const userData=await userModel.findOne({username})
+    if(userData){
+        req.session.errorMess='Las credenciales ingresadas no son validas'
+        return done(null, false)
+    }
+    const stageUser=new userModel({
+        username,
+        password:md5(password),
+        email:req.body.email
+    })
+    const newUser=await stageUser.save()
+    done(null, newUser)
+}))
+passport.serializeUser((user,done)=>{
+    done(null, user._id)
 })
-app.get('/logout', async(req,res)=>{
-    res.render('logout',{name:req.session.name})
-    req.session.destroy(err=>{
-        if(err){
-            return res.status(400).json({
-                success:false,
-                message:err.message
-            })
-        }
-    });
-    
+passport.deserializeUser(async(id,done)=>{
+    const userData=await userModel.findById(id)
+    done(null, userData)
 })
+
+app.use(passport.initialize())
+app.use(passport.session())
+
+app.use(indexRouter)
+
+
+
+
+
 module.exports=http;

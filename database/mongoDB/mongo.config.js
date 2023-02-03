@@ -11,8 +11,9 @@ const mongoConnect=async ()=>{
     if(_.isNil(MONGO_USER)){
         MONGO_URI=`${process.env.MONGO_URI}`
     }else{
-        MONGO_URI=`mongodb+srv://${MONGO_USER}:${MONGO_PASS}@${MONGO_HOST}/${MONGO_DB_NAME}?${MONGO_QUERY}`
+        MONGO_URI=`mongodb://localhost:27017/desafios`
     }
+    mongoose.Promise=global.Promise
     await mongoose.connect(MONGO_URI,{
         useNewUrlParser:true,
         useUnifiedTopology:true
