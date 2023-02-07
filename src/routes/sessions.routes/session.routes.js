@@ -67,8 +67,7 @@ router.get('/info',(req,res)=>{
         processId:process.pid,
         directorio:process.cwd(),
         path:process.execPath,
-        data:process.argv
-
+        data:process.argv[2]
     }
     res.status(200).json(info)
 })
