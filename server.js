@@ -1,19 +1,20 @@
 const http=require('./app')
-const minimist=require('minimist')
-// const PORT=process.env.PORT||3000
+const cluster=require('cluster')
+const numCpus=require('os').cpus().length
 
 
-const data=minimist(process.argv.slice(2))
-
-data.port=data._[0]
-if(!data.port){
-    PORT=3002;
-}else{
-    PORT=data.port
-}
-delete data._
+const PORT=parseInt(process.argv[2])||3000
 
 
-http.listen(PORT,()=>{
-    console.info("server runing in port "+ PORT)
-})
+
+// if(cluster.isMaster){
+//     for(let i=0;i<numCpus;i++){
+//         cluster.fork()
+//     }
+//     cluster.on('exit',()=>console.log('process '+process.pid, ' died'))
+// }else{
+//     http.listen(PORT,()=>console.log('server running '+process.pid+' in port '+PORT))
+
+// }
+
+http.listen(PORT,()=>console.log('server running '+process.pid+' in port '+PORT))

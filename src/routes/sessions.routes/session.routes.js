@@ -66,7 +66,8 @@ router.get('/info',(req,res)=>{
         memoria:process.memoryUsage(),
         processId:process.pid,
         directorio:process.cwd(),
-        path:process.execPath
+        path:process.execPath,
+        data:process.argv
 
     }
     res.status(200).json(info)
