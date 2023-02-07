@@ -3,6 +3,7 @@ const md5 = require('md5')
 const router=express.Router()
 const userModel=require('../../../database/mongoDB/models/userModel')
 const passport=require('passport')
+const minimist = require('minimist')
 
 
 router.get('/',(req,res)=>{
@@ -56,6 +57,19 @@ router.get('/logout', async(req,res)=>{
         }
     });
     
+})
+router.get('/info',(req,res)=>{
+    const info={
+        argumentos:minimist(process.argv.slice(2)),
+        OS:process.platform,
+        version:process.version,
+        memoria:process.memoryUsage(),
+        processId:process.pid,
+        directorio:process.cwd(),
+        path:process.execPath
+
+    }
+    res.status(200).json(info)
 })
 
 module.exports=router
